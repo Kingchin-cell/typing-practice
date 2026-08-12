@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>打字练习</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="app">
+  <header class="toolbar">
+    <h1 class="logo">⌨️ 打字练习</h1>
+    <div class="controls">
+      <div class="switch" id="mode-switch" role="tablist" aria-label="语言模式">
+        <button class="switch-btn active" data-mode="zh" role="tab">中文</button>
+        <button class="switch-btn" data-mode="en" role="tab">英文</button>
+        <button class="switch-btn" data-mode="classic" role="tab">名著</button>
+      </div>
+      <div class="switch" id="duration-switch" role="tablist" aria-label="时长模式">
+        <button class="switch-btn active" data-duration="60" role="tab">60秒</button>
+        <button class="switch-btn" data-duration="120" role="tab">120秒</button>
+        <button class="switch-btn" data-duration="0" role="tab">无尽</button>
+      <button class="history-btn" id="history-btn">📋 记录</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="stage">
+    <div class="book-select hidden" id="book-select">
+      <label for="book-picker">选择作品</label>
+      <select id="book-picker"></select>
+      <span class="book-author" id="book-author"></span>
+      <span class="book-progress" id="book-progress"></span>
+      <input type="number" id="jump-input" min="1" step="1" placeholder="段号">
+      <button class="jump-btn" id="jump-btn">跳转</button>
+      <button class="reset-progress-btn" id="reset-progress" title="清除该作品进度，从第一段重新开始">↺ 从头开始</button>
+    </div>
+    <div class="text-display" id="text-display" aria-label="待打字文本"></div>
+    <div class="hint" id="hint">点击任意处，直接开始打字</div>
+  </main>
+
+  <footer class="stats">
+    <div class="stat"><span class="stat-value" id="stat-speed">0</span><span class="stat-label">字/分</span></div>
+    <div class="stat"><span class="stat-value" id="stat-accuracy">100%</span><span class="stat-label">正确率</span></div>
+    <div class="stat"><span class="stat-value" id="stat-progress">0%</span><span class="stat-label">进度</span></div>
+    <div class="stat"><span class="stat-value" id="stat-timer">1:00</span><span class="stat-label" id="timer-label">剩余</span></div>
+    <button class="finish-btn hidden" id="finish-btn">结束练习</button>
+  </footer>
+</div>
+
+<!-- 结算弹窗 -->
+<div class="modal hidden" id="result-modal">
+  <div class="modal-card">
+    <h2 id="result-title">练习完成！</h2>
+    <div class="result-grid">
+      <div class="result-item"><span class="result-value" id="r-speed">0</span><span class="result-label">字/分</span></div>
+      <div class="result-item"><span class="result-value" id="r-accuracy">100%</span><span class="result-label">正确率</span></div>
+      <div class="result-item"><span class="result-value" id="r-chars">0</span><span class="result-label">正确字数</span></div>
+      <div class="result-item"><span class="result-value" id="r-time">0:00</span><span class="result-label">用时</span></div>
+    </div>
+    <button class="primary-btn" id="restart-btn">再来一次</button>
+  </div>
+</div>
+
+<!-- 练习记录弹窗 -->
+<div class="modal hidden" id="history-modal">
+  <div class="modal-card history-card">
+    <h2>📋 练习记录</h2>
+    <div class="history-list" id="history-list"></div>
+    <div class="history-actions">
+      <button class="ghost-btn" id="history-clear">清空记录</button>
+      <button class="primary-btn" id="history-close">关闭</button>
+    </div>
+  </div>
+</div>
+
+<!-- 隐藏输入框：收集键盘/输入法输入 -->
+<textarea id="ghost-input" class="ghost-input" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" aria-hidden="true"></textarea>
+
+<script src="js/corpus-zh.js"></script>
+<script src="js/corpus-en.js"></script>
+<script src="js/texts.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>
