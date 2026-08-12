@@ -22,19 +22,12 @@
   const bookSelect = $('book-select');
   const bookPicker = $('book-picker');
   const bookAuthor = $('book-author');
-  const bookProgress = $('book-progress');
-  const jumpInput = $('jump-input');
-  const jumpBtn = $('jump-btn');
-  const historyBtn = $('history-btn');
-  const historyModal = $('history-modal');
-  const historyList = $('history-list');
 
   // ---- 状态 ----
   let mode = 'zh';        // zh | en | classic
   let duration = 60;      // 秒；0 = 无尽
   let bookKey = Object.keys(CLASSICS)[0]; // 名著模式下当前作品
   let passageIndex = 0;   // 名著模式下当前段落索引（顺序播放）
-  let currentPassage = 0;  // 名著模式当前显示段（0-based）
   let text = '';          // 当前段落
   let spans = [];         // 字符 span 引用
   let charResults = [];   // 每位置是否正确（true/false/undefined）
@@ -53,8 +46,7 @@
     if (mode === 'classic') {
       // 名著：按顺序取段，最后一段打完回到第一段（循环）
       const passages = CLASSICS[bookKey].passages;
-      currentPassage = passageIndex % passages.length;
-      const t = passages[currentPassage];
+      const t = passages[passageIndex % passages.length];
       passageIndex++;
       return t;
     }
@@ -168,18 +160,10 @@
     updateStats();
   }
 
-  function updateBookProgress() {
-    if (mode !== 'classic') return;
-    const total = CLASSICS[bookKey].passages.length;
-    bookProgress.textContent = (currentPassage + 1) + ' / ' + total;
-  }
-
   function loadNext() {
     text = randomText();
-    if (mode === 'classic') setProgress(bookKey, passageIndex);
     render();
     updateStats();
-    updateBookProgress();
   }
 
   // ---- 统计 ----
@@ -256,12 +240,10 @@
     if (mode === 'classic') {
       bookPicker.value = bookKey;
       bookAuthor.textContent = CLASSICS[bookKey].author;
-      // 从上次保存的进度继续（无记录则从第一段开始）
-      passageIndex = loadProgress()[bookKey] || 0;
+      passageIndex = 0; // 切作品/重开时从第一段开始
     }
     text = randomText();
     render();
-    updateBookProgress();
   }
 
   // ---- 结束与结算 ----
@@ -282,18 +264,6 @@
     rChars.textContent = correctCount;
     rTime.textContent = fmtTime(elapsed);
     modal.classList.remove('hidden');
-    // 保存名著进度（下次从当前段落继续）
-    if (mode === 'classic') setProgress(bookKey, passageIndex);
-    // 保存练习记录
-    const list = loadHistory();
-    list.unshift({
-      time: new Date().toLocaleString('zh-CN', { hour12: false }),
-      mode: recordModeLabel(),
-      speed: speed,
-      acc: acc,
-      chars: correctCount
-    });
-    saveHistory(list.slice(0, 50));
   }
 
   $('restart-btn').addEventListener('click', restart);
@@ -314,90 +284,6 @@
   bindSwitch('#mode-switch', (btn) => { mode = btn.dataset.mode; });
   bindSwitch('#duration-switch', (btn) => { duration = parseInt(btn.dataset.duration, 10); });
 
-  // ---- 名著进度记忆（书签续练） ----
-  const PROGRESS_KEY = 'classic-progress';
-
-  function loadProgress() {
-    try {
-      return JSON.parse(localStorage.getItem(PROGRESS_KEY)) || {};
-    } catch (e) {
-      return {};
-    }
-  }
-
-  function saveProgress(map) {
-    try {
-      localStorage.setItem(PROGRESS_KEY, JSON.stringify(map));
-    } catch (e) { /* 忽略 */ }
-  }
-
-  function setProgress(book, index) {
-    const map = loadProgress();
-    map[book] = index;
-    saveProgress(map);
-  }
-
-  function clearProgress(book) {
-    const map = loadProgress();
-    delete map[book];
-    saveProgress(map);
-  }
-
-  // ---- 练习记录（本地记忆） ----
-  const HISTORY_KEY = 'typing-history';
-
-  function loadHistory() {
-    try {
-      return JSON.parse(localStorage.getItem(HISTORY_KEY)) || [];
-    } catch (e) {
-      return [];
-    }
-  }
-
-  function saveHistory(list) {
-    try {
-      localStorage.setItem(HISTORY_KEY, JSON.stringify(list));
-    } catch (e) { /* 存储失败忽略 */ }
-  }
-
-  function recordModeLabel() {
-    if (mode === 'classic') return '名著·' + CLASSICS[bookKey].author;
-    return mode === 'zh' ? '中文' : '英文';
-  }
-
-  function renderHistory() {
-    const list = loadHistory();
-    if (!list.length) {
-      historyList.innerHTML = '<p class="history-empty">还没有练习记录，快去打一局吧！</p>';
-      return;
-    }
-    historyList.innerHTML = list.map((r) =>
-      '<div class="history-item">' +
-      '<span class="h-time">' + r.time + '</span>' +
-      '<span class="h-mode">' + r.mode + '</span>' +
-      '<span class="h-speed">' + r.speed + '字/分</span>' +
-      '<span class="h-acc">' + r.acc + '%</span>' +
-      '<span class="h-chars">' + r.chars + '字</span>' +
-      '</div>'
-    ).join('');
-  }
-
-  historyBtn.addEventListener('click', () => {
-    renderHistory();
-    historyModal.classList.remove('hidden');
-  });
-
-  $('history-close').addEventListener('click', () => {
-    historyModal.classList.add('hidden');
-  });
-
-  $('history-clear').addEventListener('click', () => {
-    if (window.confirm('确定清空全部练习记录吗？')) {
-      saveHistory([]);
-      renderHistory();
-    }
-  });
-
   // ---- 名著作品选择器 ----
   for (const key of Object.keys(CLASSICS)) {
     const opt = document.createElement('option');
@@ -412,24 +298,6 @@
     restart();
   });
 
-  $('reset-progress').addEventListener('click', () => {
-    if (window.confirm('确定从头开始吗？将清除「' + bookKey + '」的进度记录。')) {
-      clearProgress(bookKey);
-      restart();
-    }
-  });
-
-  jumpBtn.addEventListener('click', () => {
-    const n = parseInt(jumpInput.value, 10);
-    const total = CLASSICS[bookKey].passages.length;
-    if (!n || n < 1 || n > total) return;
-    setProgress(bookKey, n - 1);
-    restart();
-  });
-
-  jumpInput.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') jumpBtn.click();
-  });
 
   // ---- 点击页面任意处聚焦输入（select 除外，避免抢走作品下拉焦点） ----
   document.body.addEventListener('click', (e) => {

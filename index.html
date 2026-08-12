@@ -20,7 +20,6 @@
         <button class="switch-btn active" data-duration="60" role="tab">60秒</button>
         <button class="switch-btn" data-duration="120" role="tab">120秒</button>
         <button class="switch-btn" data-duration="0" role="tab">无尽</button>
-      <button class="history-btn" id="history-btn">📋 记录</button>
       </div>
     </div>
   </header>
@@ -30,10 +29,6 @@
       <label for="book-picker">选择作品</label>
       <select id="book-picker"></select>
       <span class="book-author" id="book-author"></span>
-      <span class="book-progress" id="book-progress"></span>
-      <input type="number" id="jump-input" min="1" step="1" placeholder="段号">
-      <button class="jump-btn" id="jump-btn">跳转</button>
-      <button class="reset-progress-btn" id="reset-progress" title="清除该作品进度，从第一段重新开始">↺ 从头开始</button>
     </div>
     <div class="text-display" id="text-display" aria-label="待打字文本"></div>
     <div class="hint" id="hint">点击任意处，直接开始打字</div>
@@ -59,18 +54,6 @@
       <div class="result-item"><span class="result-value" id="r-time">0:00</span><span class="result-label">用时</span></div>
     </div>
     <button class="primary-btn" id="restart-btn">再来一次</button>
-  </div>
-</div>
-
-<!-- 练习记录弹窗 -->
-<div class="modal hidden" id="history-modal">
-  <div class="modal-card history-card">
-    <h2>📋 练习记录</h2>
-    <div class="history-list" id="history-list"></div>
-    <div class="history-actions">
-      <button class="ghost-btn" id="history-clear">清空记录</button>
-      <button class="primary-btn" id="history-close">关闭</button>
-    </div>
   </div>
 </div>
 
