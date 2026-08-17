@@ -31,6 +31,7 @@
       <span class="book-author" id="book-author"></span>
     </div>
     <div class="text-display" id="text-display" aria-label="待打字文本"></div>
+    <textarea id="ghost-input" class="ghost-input" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" aria-hidden="true" tabindex="-1"></textarea>
     <div class="hint" id="hint">点击任意处，直接开始打字</div>
   </main>
 
@@ -57,8 +58,6 @@
   </div>
 </div>
 
-<!-- 隐藏输入框：收集键盘/输入法输入 -->
-<textarea id="ghost-input" class="ghost-input" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" aria-hidden="true"></textarea>
 
 <script src="js/corpus-zh.js"></script>
 <script src="js/corpus-en.js"></script>
