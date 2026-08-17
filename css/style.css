@@ -261,11 +261,11 @@ body {
 
 .primary-btn:hover { filter: brightness(1.1); }
 
-/* ========== 隐藏输入框（位于文本区正下方，保证输入法候选框定位正确） ========== */
+/* ========== 隐藏输入框（由 JS 动态定位到当前光标字符下方，保证输入法候选框跟随光标） ========== */
 .ghost-input {
-  display: block;
-  width: 100%;
-  height: 1px;
+  position: fixed;
+  width: 2px;
+  height: 2px;
   border: none;
   outline: none;
   resize: none;

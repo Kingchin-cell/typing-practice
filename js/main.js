@@ -74,6 +74,14 @@
     updateCaret();
   }
 
+  function syncGhostPosition() {
+    const span = spans[cursor] || spans[spans.length - 1];
+    if (!span) return;
+    const rect = span.getBoundingClientRect();
+    ghostInput.style.left = rect.left + 'px';
+    ghostInput.style.top = (rect.bottom + 2) + 'px';
+  }
+
   function updateCaret() {
     for (let i = 0; i < spans.length; i++) {
       if (i === cursor) {
@@ -82,6 +90,7 @@
         spans[i].classList.remove('caret');
       }
     }
+    syncGhostPosition();
   }
 
   // ---- 计时 ----
@@ -304,6 +313,9 @@
     if (e.target.closest('select')) return;
     ghostInput.focus({ preventScroll: true });
   });
+
+  window.addEventListener('scroll', syncGhostPosition, { passive: true });
+  window.addEventListener('resize', syncGhostPosition);
 
   // ---- 初始化 ----
   restart();
