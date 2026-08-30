@@ -28,6 +28,7 @@
   let duration = 60;      // 秒；0 = 无尽
   let bookKey = Object.keys(CLASSICS)[0]; // 名著模式下当前作品
   let passageIndex = 0;   // 名著模式下当前段落索引（顺序播放）
+  let zhQueue = [];       // 中文伪随机队列（洗牌后顺序抽取，一轮不重复）
   let text = '';          // 当前段落
   let spans = [];         // 字符 span 引用
   let charResults = [];   // 每位置是否正确（true/false/undefined）
