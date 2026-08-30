@@ -43,6 +43,21 @@
   let lastValue = '';     // 英文模式 textarea 上次值
 
   // ---- 文本工具 ----
+  function nextZh() {
+    const pool = TEXT_LIBRARY.zh;
+    if (!zhQueue.length) {
+      // 池子抽完了 → 重新洗牌形成新队列（Fisher-Yates）
+      zhQueue = pool.slice();
+      for (let i = zhQueue.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        const tmp = zhQueue[i];
+        zhQueue[i] = zhQueue[j];
+        zhQueue[j] = tmp;
+      }
+    }
+    return zhQueue.pop();
+  }
+
   function randomText() {
     if (mode === 'classic') {
       // 名著：按顺序取段，最后一段打完回到第一段（循环）
@@ -51,6 +66,7 @@
       passageIndex++;
       return t;
     }
+    if (mode === 'zh') return nextZh();
     const pool = TEXT_LIBRARY[mode];
     let t = pool[Math.floor(Math.random() * pool.length)];
     if (t === text && pool.length > 1) {
